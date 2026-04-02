@@ -1,0 +1,21 @@
+{
+    "name": "carlos-e-larissa/stockmaster",
+    "description": "Sistema básico de gerenciamento de estoque desenvolvido para o Projeto Integrador.",
+    "autoload": {
+        "psr-4": {
+            "CarlosELarissa\\Stockmaster\\": "src/",
+            "model\\": "src/model/",
+            "dao\\": "src/dao/",
+            "utils\\": "src/utils/"
+        }
+    },
+    "require": {
+        "doctrine/orm": "^3.6",
+        "symfony/cache": "^7.4",
+        "symfony/console": "^7.4",
+        "vlucas/phpdotenv": "^5.6"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.5"
+    }
+}
