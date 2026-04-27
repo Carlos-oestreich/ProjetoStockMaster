@@ -1,9 +1,9 @@
 <?php
 
-namespace CarlosELarissa\Stockmaster\dao;
+namespace dao;
 
 
-use CarlosELarissa\Stockmaster\model\Usuario;
+use model\Usuario;
 use utils\Conexao;
 
 class UsuarioDAO extends GenericDAO

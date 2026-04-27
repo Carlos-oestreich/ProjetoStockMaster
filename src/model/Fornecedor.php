@@ -1,6 +1,6 @@
 <?php
 
-namespace CarlosELarissa\Stockmaster\model;
+namespace model;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;

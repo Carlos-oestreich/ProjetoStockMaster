@@ -1,7 +1,7 @@
 <?php
 
-use CarlosELarissa\Stockmaster\dao\CategoriaDAO;
-use CarlosELarissa\Stockmaster\model\Categoria;
+use dao\CategoriaDAO;
+use model\Categoria;
 use PHPUnit\Framework\TestCase;
 
 class CategoriaDAOTest extends TestCase

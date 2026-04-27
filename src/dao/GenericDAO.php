@@ -1,10 +1,10 @@
 <?php
 
-namespace CarlosELarissa\Stockmaster\dao;
+namespace dao;
 
+use model\GenericModel;
 use utils\Conexao;
 use Exception;
-use CarlosELarissa\Stockmaster\model\GenericModel;
 
 
 

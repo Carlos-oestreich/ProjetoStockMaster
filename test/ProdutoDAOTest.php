@@ -1,11 +1,11 @@
 <?php
 
-use CarlosELarissa\Stockmaster\dao\CategoriaDAO;
-use CarlosELarissa\Stockmaster\dao\FornecedorDAO;
-use CarlosELarissa\Stockmaster\dao\ProdutoDAO;
-use CarlosELarissa\Stockmaster\model\Categoria;
-use CarlosELarissa\Stockmaster\model\Fornecedor;
-use CarlosELarissa\Stockmaster\model\Produto;
+use dao\CategoriaDAO;
+use dao\FornecedorDAO;
+use dao\ProdutoDAO;
+use model\Categoria;
+use model\Fornecedor;
+use model\Produto;
 use PHPUnit\Framework\TestCase;
 
 class ProdutoDAOTest extends TestCase
@@ -38,8 +38,8 @@ class ProdutoDAOTest extends TestCase
         $produto->setQuantidadeEstoque(10);
         $produto->setQuantidadeMinima(2);
         $produto->setDataCadastro(new DateTime("2025-03-31 10:00:00"));
-        $produto->setCategorias($categoria);
-        $produto->setFornecedores($fornecedor);
+        $produto->setCategoria($categoria);
+        $produto->setFornecedor($fornecedor);
 
         $produtoInserido = ProdutoDAO::salvar($produto);
 
@@ -84,8 +84,8 @@ class ProdutoDAOTest extends TestCase
         $produto->setQuantidadeEstoque(5);
         $produto->setQuantidadeMinima(1);
         $produto->setDataCadastro(new DateTime("2025-03-31 14:00:00"));
-        $produto->setCategorias($categoria);
-        $produto->setFornecedores($fornecedor);
+        $produto->setCategoria($categoria);
+        $produto->setFornecedor($fornecedor);
 
         $produto = ProdutoDAO::salvar($produto);
 
@@ -122,8 +122,8 @@ class ProdutoDAOTest extends TestCase
         $produto->setQuantidadeEstoque(8);
         $produto->setQuantidadeMinima(2);
         $produto->setDataCadastro(new DateTime("2025-03-31 15:00:00"));
-        $produto->setCategorias($categoria);
-        $produto->setFornecedores($fornecedor);
+        $produto->setCategoria($categoria);
+        $produto->setFornecedor($fornecedor);
 
         $produto = ProdutoDAO::salvar($produto);
 
@@ -163,8 +163,8 @@ class ProdutoDAOTest extends TestCase
         $produto->setQuantidadeEstoque(10);
         $produto->setQuantidadeMinima(3);
         $produto->setDataCadastro(new DateTime("2025-03-31 16:00:00"));
-        $produto->setCategorias($categoria);
-        $produto->setFornecedores($fornecedor);
+        $produto->setCategoria($categoria);
+        $produto->setFornecedor($fornecedor);
 
         $produto = ProdutoDAO::salvar($produto);
 
@@ -200,8 +200,8 @@ class ProdutoDAOTest extends TestCase
         $produto->setQuantidadeEstoque(12);
         $produto->setQuantidadeMinima(2);
         $produto->setDataCadastro(new DateTime("2025-03-31 17:00:00"));
-        $produto->setCategorias($categoria);
-        $produto->setFornecedores($fornecedor);
+        $produto->setCategoria($categoria);
+        $produto->setFornecedor($fornecedor);
 
         ProdutoDAO::salvar($produto);
 

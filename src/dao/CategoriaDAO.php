@@ -1,8 +1,8 @@
 <?php
 
-namespace CarlosELarissa\Stockmaster\dao;
+namespace dao;
 
-use CarlosELarissa\Stockmaster\model\Categoria;
+use model\Categoria;
 use utils\Conexao;
 
 class CategoriaDAO extends GenericDAO

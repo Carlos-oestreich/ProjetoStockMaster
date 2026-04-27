@@ -1,10 +1,10 @@
 <?php
 
-namespace CarlosELarissa\Stockmaster\dao;
+namespace dao;
 
 
 
-use CarlosELarissa\Stockmaster\model\Fornecedor;
+use model\Fornecedor;
 use utils\Conexao;
 
 class FornecedorDAO extends GenericDAO

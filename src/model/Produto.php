@@ -1,6 +1,6 @@
 <?php
 
-namespace CarlosELarissa\Stockmaster\model;
+namespace model;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -35,11 +35,11 @@ class Produto extends GenericModel {
 
     #[ORM\ManyToOne(targetEntity: Categoria::class)]
     #[ORM\JoinColumn(name: "categoria_produto")]
-    private $categorias;
+    private $categoria;
 
     #[ORM\ManyToOne(targetEntity: Fornecedor::class, inversedBy: "produtos")]
     #[ORM\JoinColumn(name: "fornecedor_produto")]
-    private $fornecedores;
+    private $fornecedore;
 
     /**
      * @return mixed
@@ -172,33 +172,33 @@ class Produto extends GenericModel {
     /**
      * @return mixed
      */
-    public function getCategorias()
+    public function getCategoria()
     {
-        return $this->categorias;
+        return $this->categoria;
     }
 
     /**
-     * @param mixed $categorias
+     * @param mixed $categoria
      */
-    public function setCategorias($categorias): void
+    public function setCategoria($categoria): void
     {
-        $this->categorias = $categorias;
+        $this->categoria = $categoria;
     }
 
     /**
      * @return mixed
      */
-    public function getFornecedores()
+    public function getFornecedor()
     {
-        return $this->fornecedores;
+        return $this->fornecedor;
     }
 
     /**
-     * @param mixed $fornecedores
+     * @param mixed $fornecedor
      */
-    public function setFornecedores($fornecedores): void
+    public function setFornecedor($fornecedor): void
     {
-        $this->fornecedores = $fornecedores;
+        $this->fornecedor = $fornecedor;
     }
 
 

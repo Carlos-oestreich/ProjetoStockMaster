@@ -1,7 +1,7 @@
 <?php
 
-use CarlosELarissa\Stockmaster\dao\FornecedorDAO;
-use CarlosELarissa\Stockmaster\model\Fornecedor;
+use dao\FornecedorDAO;
+use model\Fornecedor;
 use PHPUnit\Framework\TestCase;
 
 class FornecedorDAOTest extends TestCase

@@ -1,7 +1,7 @@
 <?php
 
-use CarlosELarissa\Stockmaster\dao\UsuarioDAO;
-use CarlosELarissa\Stockmaster\model\Usuario;
+use dao\UsuarioDAO;
+use model\Usuario;
 use PHPUnit\Framework\TestCase;
 
 class UsuarioDAOTest extends TestCase
