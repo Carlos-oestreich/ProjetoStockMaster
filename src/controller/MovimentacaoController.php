@@ -27,7 +27,7 @@ class MovimentacaoController
         }
     }
 
-    public function nova()
+    public function cadastrar()
     {
         try {
             $produtos     = ProdutoDAO::listar();

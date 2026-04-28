@@ -25,7 +25,7 @@ class UsuarioController
         }
     }
 
-    public function novo()
+    public function cadastrar()
     {
         $usuario      = new Usuario();
         $totalAlertas = count(ProdutoDAO::listarEstoqueBaixo());

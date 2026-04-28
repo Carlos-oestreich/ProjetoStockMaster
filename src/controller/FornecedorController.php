@@ -25,7 +25,7 @@ class FornecedorController
         }
     }
 
-    public function novo()
+    public function cadastrar()
     {
         $fornecedor   = new Fornecedor();
         $totalAlertas = count(ProdutoDAO::listarEstoqueBaixo());

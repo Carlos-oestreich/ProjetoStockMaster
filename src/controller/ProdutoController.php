@@ -31,7 +31,7 @@ class ProdutoController
         }
     }
 
-    public function novo()
+    public function cadastrar()
     {
         try {
             $produto      = new Produto();

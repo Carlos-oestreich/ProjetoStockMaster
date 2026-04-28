@@ -24,7 +24,7 @@ class CategoriaController
         }
     }
 
-    public function novo()
+    public function cadastrar()
     {
         $categoria    = new Categoria();
         $totalAlertas = count(\dao\ProdutoDAO::listarEstoqueBaixo());
