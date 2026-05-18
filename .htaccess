@@ -1,0 +1,16 @@
+# Ativa o motor de reescrita do Apache para processar regras de URL.
+RewriteEngine On
+
+# Impede a listagem de arquivos em pastas que não possuem um 'index'.
+# Se alguém tentar acessar uma pasta vazia, verá um erro 403 em vez da lista de arquivos.
+Options -Indexes
+
+# --- As duas linhas abaixo trabalham juntas para criar um "proxy" para a pasta pública ---
+
+# CONDIÇÃO: Se o que o usuário digitou na URL NÃO começar com "/public/"
+RewriteCond %{REQUEST_URI} !^/public/
+
+# REGRA: Direciona a requisição internamente para a pasta /public/.
+# O "(.*)" captura o que foi digitado e o "$1" repete isso dentro do novo caminho.
+# O [L] indica que, se esta regra for aplicada, o Apache deve parar de processar outras regras.
+RewriteRule ^(.*)$ public/$1 [L]

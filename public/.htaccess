@@ -1,0 +1,14 @@
+# Ativa o motor de reescrita nesta pasta para gerenciar URLs amigáveis.
+RewriteEngine On
+
+# CONDIÇÃO 1: Verifica se o caminho solicitado NÃO corresponde a um arquivo real no servidor.
+# Isso permite que imagens, PDFs e arquivos CSS sejam acessados normalmente.
+RewriteCond %{REQUEST_FILENAME} !-f
+
+# CONDIÇÃO 2: Verifica se o caminho solicitado NÃO corresponde a uma pasta real no servidor.
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# REGRA: Se não for arquivo nem pasta, redireciona a requisição para o ponto central (index.php).
+# [QSA]: Mantém os parâmetros da URL (ex: ?pagina=1) após o redirecionamento.
+# [L]: Informa ao Apache que esta é a última regra a ser processada nesta execução.
+RewriteRule ^ index.php [QSA,L]
