@@ -1,0 +1,144 @@
+/* =============================================================
+   StockMaster – app.css
+   Suporte a tema escuro (padrao) e claro
+   ============================================================= */
+
+/* ---- VARIAVEIS TEMA ESCURO (padrao) ---- */
+:root,
+[data-bs-theme="dark"] {
+    --bg-page:    #0f172a;
+    --bg-card:    #1e293b;
+    --bg-header:  #1e293b;
+    --border-col: #334155;
+    --text-main:  #f1f5f9;
+    --text-muted: #94a3b8;
+    --table-head: #0f172a;
+}
+
+/* ---- VARIAVEIS TEMA CLARO ---- */
+[data-bs-theme="light"] {
+    --bg-page:    #f1f5f9;
+    --bg-card:    #ffffff;
+    --bg-header:  #ffffff;
+    --border-col: #e2e8f0;
+    --text-main:  #0f172a;
+    --text-muted: #64748b;
+    --table-head: #f8fafc;
+}
+
+body {
+    background: var(--bg-page) !important;
+    transition: background .2s;
+}
+
+/* Sidebar */
+aside#sidebar {
+    background: var(--bg-card) !important;
+    border-right-color: var(--border-col) !important;
+}
+
+/* Header */
+header {
+    background: var(--bg-header) !important;
+    border-bottom-color: var(--border-col) !important;
+}
+
+/* Nav hover na sidebar */
+aside .nav-link:hover:not(.bg-primary) {
+    background: rgba(255,255,255,0.07) !important;
+    color: var(--text-main) !important;
+}
+[data-bs-theme="light"] aside .nav-link:hover:not(.bg-primary) {
+    background: rgba(0,0,0,0.05) !important;
+    color: var(--text-main) !important;
+}
+
+/* Cards de estatistica */
+.card-stat {
+    background: var(--bg-card);
+    border: 1px solid var(--border-col);
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: transform .2s, box-shadow .2s;
+}
+.card-stat:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,.15);
+}
+.card-stat .stat-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.25rem;
+}
+.card-stat .stat-value {
+    font-size: 1.875rem; font-weight: 700;
+    color: var(--text-main); line-height: 1.2;
+}
+.card-stat .stat-label {
+    font-size: .8rem; color: var(--text-muted);
+}
+
+/* Tabelas */
+.table-stockmaster {
+    background: var(--bg-card);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border-col);
+}
+.table-stockmaster thead th {
+    background: var(--table-head);
+    color: var(--text-muted);
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    border-bottom: 1px solid var(--border-col);
+    padding: 1rem 1.25rem;
+}
+.table-stockmaster tbody td {
+    padding: .85rem 1.25rem;
+    border-bottom: 1px solid var(--border-col);
+    vertical-align: middle;
+    color: var(--text-main);
+}
+.table-stockmaster tbody tr:last-child td { border-bottom: none; }
+.table-stockmaster tbody tr:hover { background: rgba(0,0,0,.03); }
+
+/* Badges de status */
+.badge-normal      { background: rgba(16,185,129,.15);  color: #10b981; }
+.badge-atencao     { background: rgba(245,158,11,.15);   color: #f59e0b; }
+.badge-critico     { background: rgba(239,68,68,.15);    color: #ef4444; }
+.badge-sem-estoque { background: rgba(100,116,139,.15);  color: #94a3b8; }
+
+/* Barra de estoque */
+.stock-bar-wrap { width:100%; background: var(--border-col); border-radius:99px; height:6px; }
+.stock-bar      { height:6px; border-radius:99px; transition: width .4s; }
+
+/* Botao icone */
+.btn-icon {
+    width:34px; height:34px;
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:0; border-radius:8px;
+}
+
+/* Campos travados (readonly visual) */
+.campo-bloqueado {
+    opacity: .7;
+    cursor: not-allowed;
+}
+
+/* Botao de tema (toggle) */
+#btn-tema {
+    transition: transform .3s;
+}
+#btn-tema:hover { transform: rotate(20deg); }
+
+/* Cards do Bootstrap respeitam o tema */
+.card {
+    background: var(--bg-card) !important;
+    border-color: var(--border-col) !important;
+}
+.card-header {
+    background: var(--bg-card) !important;
+    border-color: var(--border-col) !important;
+}

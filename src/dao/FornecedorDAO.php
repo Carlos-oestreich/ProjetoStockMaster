@@ -11,6 +11,21 @@ class FornecedorDAO extends GenericDAO
 {
     protected static $modelClass = Fornecedor::class;
 
+    public static function listarPorEmpresa(int $empresaId): array
+    {
+        $em = Conexao::getEntityManager();
+        return $em->getRepository(self::$modelClass)->findBy(['empresa' => $empresaId]);
+    }
+
+    public static function buscarPorIdEEmpresa(int $id, int $empresaId): ?Fornecedor
+    {
+        $em = Conexao::getEntityManager();
+        return $em->getRepository(self::$modelClass)->findOneBy([
+            'id' => $id,
+            'empresa' => $empresaId,
+        ]);
+    }
+
     public static function buscarPorNome($nome){
         $em = Conexao::getEntityManager();
         return $em->getRepository(self::$modelClass)->findBy(['nome' => $nome]);

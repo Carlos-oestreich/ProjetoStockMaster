@@ -5,14 +5,21 @@ namespace controller;
 use Exception;
 use dao\CategoriaDAO;
 use model\Categoria;
+use dao\EmpresaDAO;
 
 class CategoriaController
 {
+    public function novo()
+    {
+        return $this->cadastrar();
+    }
+
     public function listar()
     {
         try {
-            $categorias   = CategoriaDAO::listar();
-            $totalAlertas = count(\dao\ProdutoDAO::listarEstoqueBaixo());
+            $empresaId    = $_SESSION['usuario']['empresaId'] ?? null;
+            $categorias   = $empresaId ? CategoriaDAO::listarPorEmpresa($empresaId) : [];
+            $totalAlertas = $empresaId ? count(\dao\ProdutoDAO::listarEstoqueBaixoPorEmpresa($empresaId)) : 0;
         } catch (Exception $ex) {
             $categorias = [];
             $totalAlertas = 0;
@@ -27,7 +34,8 @@ class CategoriaController
     public function cadastrar()
     {
         $categoria    = new Categoria();
-        $totalAlertas = count(\dao\ProdutoDAO::listarEstoqueBaixo());
+        $empresaId    = $_SESSION['usuario']['empresaId'] ?? null;
+        $totalAlertas = $empresaId ? count(\dao\ProdutoDAO::listarEstoqueBaixoPorEmpresa($empresaId)) : 0;
         $paginaAtiva  = 'categorias';
         $tituloPagina = 'Nova Categoria';
         require __DIR__ . '/../view/cadastro-categoria.php';
@@ -36,9 +44,10 @@ class CategoriaController
     public function buscar(array $params)
     {
         try {
-            $categoria = CategoriaDAO::buscarPorId($params['id']);
+            $empresaId = $_SESSION['usuario']['empresaId'] ?? null;
+            $categoria = $empresaId ? CategoriaDAO::buscarPorIdEEmpresa($params['id'], $empresaId) : null;
             if (empty($categoria)) throw new Exception('Categoria não encontrada.');
-            $totalAlertas = count(\dao\ProdutoDAO::listarEstoqueBaixo());
+            $totalAlertas = $empresaId ? count(\dao\ProdutoDAO::listarEstoqueBaixoPorEmpresa($empresaId)) : 0;
         } catch (Exception $ex) {
             $_SESSION['flash'] = ['tipo' => 'danger', 'mensagem' => $ex->getMessage()];
             header('Location: ' . BASE_URL . '/categorias');
@@ -61,10 +70,13 @@ class CategoriaController
             $setor          = filter_input(INPUT_POST, 'setor',          FILTER_SANITIZE_SPECIAL_CHARS);
             $codigoInterno  = filter_input(INPUT_POST, 'codigo_interno', FILTER_SANITIZE_SPECIAL_CHARS);
             $ativo          = filter_input(INPUT_POST, 'ativo',          FILTER_VALIDATE_BOOLEAN);
+            $empresaId      = $_SESSION['usuario']['empresaId'] ?? null;
 
             if (empty($nome)) throw new Exception('O nome da categoria é obrigatório.');
 
-            $categoria = $id ? CategoriaDAO::buscarPorId($id) : new Categoria();
+            $categoria = $id && $empresaId
+                ? CategoriaDAO::buscarPorIdEEmpresa($id, $empresaId)
+                : new Categoria();
             if (empty($categoria)) throw new Exception('Categoria não encontrada.');
 
             $categoria->setNome($nome);
@@ -72,6 +84,12 @@ class CategoriaController
             $categoria->setSetor($setor ?? '');
             $categoria->setCodigoInterno($codigoInterno ?? '');
             $categoria->setAtivo($ativo ?? true);
+
+            if ($empresaId && !$categoria->getEmpresa()) {
+                $empresa = EmpresaDAO::buscarPorId($empresaId);
+                if (!$empresa) throw new Exception('Empresa inválida.');
+                $categoria->setEmpresa($empresa);
+            }
 
             CategoriaDAO::salvar($categoria);
             $_SESSION['flash'] = ['tipo' => 'success', 'mensagem' => 'Categoria salva com sucesso!'];

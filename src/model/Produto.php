@@ -39,7 +39,11 @@ class Produto extends GenericModel {
 
     #[ORM\ManyToOne(targetEntity: Fornecedor::class, inversedBy: "produtos")]
     #[ORM\JoinColumn(name: "fornecedor_produto")]
-    private $fornecedore;
+    private $fornecedor;
+
+    #[ORM\ManyToOne(targetEntity: Empresa::class)]
+    #[ORM\JoinColumn(name: "empresa_id", referencedColumnName: "id", onDelete: "CASCADE")]
+    private $empresa;
 
     /**
      * @return mixed
@@ -199,6 +203,16 @@ class Produto extends GenericModel {
     public function setFornecedor($fornecedor): void
     {
         $this->fornecedor = $fornecedor;
+    }
+
+    public function getEmpresa(): ?Empresa
+    {
+        return $this->empresa;
+    }
+
+    public function setEmpresa($empresa): void
+    {
+        $this->empresa = $empresa;
     }
 
 

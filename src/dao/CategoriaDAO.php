@@ -9,6 +9,21 @@ class CategoriaDAO extends GenericDAO
 {
     protected static $modelClass = Categoria::class;
 
+    public static function listarPorEmpresa(int $empresaId): array
+    {
+        $em = Conexao::getEntityManager();
+        return $em->getRepository(self::$modelClass)->findBy(['empresa' => $empresaId]);
+    }
+
+    public static function buscarPorIdEEmpresa(int $id, int $empresaId): ?Categoria
+    {
+        $em = Conexao::getEntityManager();
+        return $em->getRepository(self::$modelClass)->findOneBy([
+            'id' => $id,
+            'empresa' => $empresaId,
+        ]);
+    }
+
     public static function buscarPorNome($nome)
     {
         $em = Conexao::getEntityManager();

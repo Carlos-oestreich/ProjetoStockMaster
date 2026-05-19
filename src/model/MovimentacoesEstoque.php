@@ -34,6 +34,10 @@ class MovimentacoesEstoque extends GenericModel {
     #[ORM\JoinColumn(name: "usuario_movimentacao")]
     private $usuario;
 
+    #[ORM\ManyToOne(targetEntity: Empresa::class)]
+    #[ORM\JoinColumn(name: "empresa_id", referencedColumnName: "id", onDelete: "CASCADE")]
+    private $empresa;
+
     /**
      * @return mixed
      */
@@ -160,6 +164,16 @@ class MovimentacoesEstoque extends GenericModel {
     public function setUsuario($usuario): void
     {
         $this->usuario = $usuario;
+    }
+
+    public function getEmpresa(): ?Empresa
+    {
+        return $this->empresa;
+    }
+
+    public function setEmpresa($empresa): void
+    {
+        $this->empresa = $empresa;
     }
 
 

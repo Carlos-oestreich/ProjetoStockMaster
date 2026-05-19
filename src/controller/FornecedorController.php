@@ -6,14 +6,21 @@ use Exception;
 use dao\FornecedorDAO;
 use dao\ProdutoDAO;
 use model\Fornecedor;
+use dao\EmpresaDAO;
 
 class FornecedorController
 {
+    public function novo()
+    {
+        return $this->cadastrar();
+    }
+
     public function listar()
     {
         try {
-            $fornecedores = FornecedorDAO::listar();
-            $totalAlertas = count(ProdutoDAO::listarEstoqueBaixo());
+            $empresaId    = $_SESSION['usuario']['empresaId'] ?? null;
+            $fornecedores = $empresaId ? FornecedorDAO::listarPorEmpresa($empresaId) : [];
+            $totalAlertas = $empresaId ? count(ProdutoDAO::listarEstoqueBaixoPorEmpresa($empresaId)) : 0;
         } catch (Exception $ex) {
             $fornecedores = [];
             $totalAlertas = 0;
@@ -28,7 +35,8 @@ class FornecedorController
     public function cadastrar()
     {
         $fornecedor   = new Fornecedor();
-        $totalAlertas = count(ProdutoDAO::listarEstoqueBaixo());
+        $empresaId    = $_SESSION['usuario']['empresaId'] ?? null;
+        $totalAlertas = $empresaId ? count(ProdutoDAO::listarEstoqueBaixoPorEmpresa($empresaId)) : 0;
         $paginaAtiva  = 'fornecedores';
         $tituloPagina = 'Novo Fornecedor';
         require __DIR__ . '/../view/cadastro-fornecedor.php';
@@ -37,9 +45,10 @@ class FornecedorController
     public function buscar(array $params)
     {
         try {
-            $fornecedor = FornecedorDAO::buscarPorId($params['id']);
+            $empresaId  = $_SESSION['usuario']['empresaId'] ?? null;
+            $fornecedor = $empresaId ? FornecedorDAO::buscarPorIdEEmpresa($params['id'], $empresaId) : null;
             if (empty($fornecedor)) throw new Exception('Fornecedor não encontrado.');
-            $totalAlertas = count(ProdutoDAO::listarEstoqueBaixo());
+            $totalAlertas = $empresaId ? count(ProdutoDAO::listarEstoqueBaixoPorEmpresa($empresaId)) : 0;
         } catch (Exception $ex) {
             $_SESSION['flash'] = ['tipo' => 'danger', 'mensagem' => $ex->getMessage()];
             header('Location: ' . BASE_URL . '/fornecedores');
@@ -62,6 +71,7 @@ class FornecedorController
             $email    = filter_input(INPUT_POST, 'email',    FILTER_SANITIZE_EMAIL);
             $telefone = filter_input(INPUT_POST, 'telefone', FILTER_SANITIZE_SPECIAL_CHARS);
             $ativo    = filter_input(INPUT_POST, 'ativo',    FILTER_VALIDATE_BOOLEAN);
+            $empresaId = $_SESSION['usuario']['empresaId'] ?? null;
 
             if (empty($nome)) throw new Exception('O nome do fornecedor é obrigatório.');
 
@@ -71,7 +81,9 @@ class FornecedorController
                 throw new Exception('CNPJ inválido. Informe 14 dígitos.');
             }
 
-            $fornecedor = $id ? FornecedorDAO::buscarPorId($id) : new Fornecedor();
+            $fornecedor = $id && $empresaId
+                ? FornecedorDAO::buscarPorIdEEmpresa($id, $empresaId)
+                : new Fornecedor();
             if (empty($fornecedor)) throw new Exception('Fornecedor não encontrado.');
 
             $fornecedor->setNome($nome);
@@ -79,6 +91,12 @@ class FornecedorController
             $fornecedor->setEmail($email ?? '');
             $fornecedor->setTelefone($telefone ?? '');
             $fornecedor->setAtivo($ativo ?? true);
+
+            if ($empresaId && !$fornecedor->getEmpresa()) {
+                $empresa = EmpresaDAO::buscarPorId($empresaId);
+                if (!$empresa) throw new Exception('Empresa inválida.');
+                $fornecedor->setEmpresa($empresa);
+            }
 
             FornecedorDAO::salvar($fornecedor);
             $_SESSION['flash'] = ['tipo' => 'success', 'mensagem' => 'Fornecedor salvo com sucesso!'];

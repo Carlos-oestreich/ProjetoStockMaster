@@ -23,6 +23,10 @@ class Categoria extends GenericModel {
     #[ORM\Column(name: "ativo_categoria", type: "boolean")]
     private $ativo;
 
+    #[ORM\ManyToOne(targetEntity: Empresa::class)]
+    #[ORM\JoinColumn(name: "empresa_id", referencedColumnName: "id", onDelete: "CASCADE")]
+    private $empresa;
+
     /**
      * @return mixed
      */
@@ -101,6 +105,16 @@ class Categoria extends GenericModel {
     public function setAtivo($ativo): void
     {
         $this->ativo = $ativo;
+    }
+
+    public function getEmpresa(): ?Empresa
+    {
+        return $this->empresa;
+    }
+
+    public function setEmpresa($empresa): void
+    {
+        $this->empresa = $empresa;
     }
 
 

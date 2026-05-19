@@ -24,8 +24,12 @@ class Fornecedor extends GenericModel {
     #[ORM\Column(name: "ativo_fornecedor", type: "boolean")]
     private $ativo;
 
-    #[ORM\OneToMany(mappedBy: "fornecedores", targetEntity: Produto::class)]
+    #[ORM\OneToMany(mappedBy: "fornecedor", targetEntity: Produto::class)]
     private $produtos;
+
+    #[ORM\ManyToOne(targetEntity: Empresa::class)]
+    #[ORM\JoinColumn(name: "empresa_id", referencedColumnName: "id", onDelete: "CASCADE")]
+    private $empresa;
 
     public function __construct() {
         $this->produtos = new ArrayCollection();
@@ -119,6 +123,16 @@ class Fornecedor extends GenericModel {
     public function setProdutos(ArrayCollection $produtos): void
     {
         $this->produtos = $produtos;
+    }
+
+    public function getEmpresa(): ?Empresa
+    {
+        return $this->empresa;
+    }
+
+    public function setEmpresa($empresa): void
+    {
+        $this->empresa = $empresa;
     }
 
 

@@ -23,6 +23,15 @@ class MovimentacaoEstoqueDAO extends GenericDAO
         );
     }
 
+    public static function listarPorEmpresa(int $empresaId): array
+    {
+        $em = Conexao::getEntityManager();
+        return $em->getRepository(self::$modelClass)->findBy(
+            ['empresa' => $empresaId],
+            ['dataMovimentacao' => 'DESC']
+        );
+    }
+
     public static function listarPorTipo(string $tipo): array
     {
         $em = Conexao::getEntityManager();

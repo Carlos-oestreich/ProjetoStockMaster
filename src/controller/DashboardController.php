@@ -12,9 +12,10 @@ class DashboardController
     public function index()
     {
         try {
-            $produtos       = ProdutoDAO::listar();
-            $movimentacoes  = MovimentacaoEstoqueDAO::listar();
-            $alertas        = ProdutoDAO::listarEstoqueBaixo();
+            $empresaId      = $_SESSION['usuario']['empresaId'] ?? null;
+            $produtos       = $empresaId ? ProdutoDAO::listarPorEmpresa($empresaId) : [];
+            $movimentacoes  = $empresaId ? MovimentacaoEstoqueDAO::listarPorEmpresa($empresaId) : [];
+            $alertas        = $empresaId ? ProdutoDAO::listarEstoqueBaixoPorEmpresa($empresaId) : [];
 
             // Valor total em estoque
             $valorEstoque = 0;

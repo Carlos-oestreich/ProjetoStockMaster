@@ -10,7 +10,8 @@ class AlertaController
     public function index()
     {
         try {
-            $alertas      = ProdutoDAO::listarEstoqueBaixo();
+            $empresaId    = $_SESSION['usuario']['empresaId'] ?? null;
+            $alertas      = $empresaId ? ProdutoDAO::listarEstoqueBaixoPorEmpresa($empresaId) : [];
             $semEstoque   = array_filter($alertas, fn($p) => $p->getQuantidadeEstoque() === 0);
             $criticos     = array_filter($alertas, fn($p) => $p->getQuantidadeEstoque() > 0 && $p->getQuantidadeEstoque() <= $p->getQuantidadeMinima());
             $totalAlertas = count($alertas);

@@ -8,21 +8,47 @@ use dao\ProdutoDAO;
 use dao\CategoriaDAO;
 use dao\FornecedorDAO;
 use dao\MovimentacaoEstoqueDAO;
+use dao\EmpresaDAO;
 use model\Produto;
 use model\MovimentacoesEstoque;
 
 class ProdutoController
 {
+    public function novo()
+    {
+        return $this->cadastrar();
+    }
+
     public function listar()
     {
         try {
-            $produtos    = ProdutoDAO::listar();
-            $categorias  = CategoriaDAO::listar();
-            $fornecedores = FornecedorDAO::listar();
-            $totalAlertas = count(ProdutoDAO::listarEstoqueBaixo());
+            $empresaId    = $_SESSION['usuario']['empresaId'] ?? null;
+            $produtos     = $empresaId ? ProdutoDAO::listarPorEmpresa($empresaId) : [];
+            $categorias   = $empresaId ? CategoriaDAO::listarPorEmpresa($empresaId) : [];
+            $fornecedores = $empresaId ? FornecedorDAO::listarPorEmpresa($empresaId) : [];
+            $totalAlertas = $empresaId ? count(ProdutoDAO::listarEstoqueBaixoPorEmpresa($empresaId)) : 0;
+
+            $movimentacoes = $empresaId ? MovimentacaoEstoqueDAO::listarPorEmpresa($empresaId) : [];
+            $inicio30 = (new DateTime())->modify('-30 days');
+            $vendasUltimoMes = [];
+            foreach ($movimentacoes as $m) {
+                if ($m->getTipo() !== 'SAIDA') {
+                    continue;
+                }
+                if ($m->getDataMovimentacao() < $inicio30) {
+                    continue;
+                }
+                $produto = $m->getProduto();
+                if (!$produto) {
+                    continue;
+                }
+                $pid = $produto->getId();
+                $vendasUltimoMes[$pid] = ($vendasUltimoMes[$pid] ?? 0) + ($m->getQuantidade() * (float)$produto->getPreco());
+            }
         } catch (Exception $ex) {
             $produtos = $categorias = $fornecedores = [];
             $totalAlertas = 0;
+            $vendasUltimoMes = [];
             $_SESSION['flash'] = ['tipo' => 'danger', 'mensagem' => $ex->getMessage()];
         } finally {
             $paginaAtiva  = 'produtos';
@@ -35,9 +61,10 @@ class ProdutoController
     {
         try {
             $produto      = new Produto();
-            $categorias   = CategoriaDAO::listar();
-            $fornecedores = FornecedorDAO::listar();
-            $totalAlertas = count(ProdutoDAO::listarEstoqueBaixo());
+            $empresaId    = $_SESSION['usuario']['empresaId'] ?? null;
+            $categorias   = $empresaId ? CategoriaDAO::listarPorEmpresa($empresaId) : [];
+            $fornecedores = $empresaId ? FornecedorDAO::listarPorEmpresa($empresaId) : [];
+            $totalAlertas = $empresaId ? count(ProdutoDAO::listarEstoqueBaixoPorEmpresa($empresaId)) : 0;
         } catch (Exception $ex) {
             $produto = new Produto();
             $categorias = $fornecedores = [];
@@ -53,11 +80,12 @@ class ProdutoController
     public function buscar(array $params)
     {
         try {
-            $produto = ProdutoDAO::buscarPorId($params['id']);
+            $empresaId = $_SESSION['usuario']['empresaId'] ?? null;
+            $produto = $empresaId ? ProdutoDAO::buscarPorIdEEmpresa($params['id'], $empresaId) : null;
             if (empty($produto)) throw new Exception('Produto não encontrado.');
-            $categorias   = CategoriaDAO::listar();
-            $fornecedores = FornecedorDAO::listar();
-            $totalAlertas = count(ProdutoDAO::listarEstoqueBaixo());
+            $categorias   = $empresaId ? CategoriaDAO::listarPorEmpresa($empresaId) : [];
+            $fornecedores = $empresaId ? FornecedorDAO::listarPorEmpresa($empresaId) : [];
+            $totalAlertas = $empresaId ? count(ProdutoDAO::listarEstoqueBaixoPorEmpresa($empresaId)) : 0;
         } catch (Exception $ex) {
             $_SESSION['flash'] = ['tipo' => 'danger', 'mensagem' => $ex->getMessage()];
             header('Location: ' . BASE_URL . '/produtos');
@@ -76,9 +104,10 @@ class ProdutoController
         try {
             $id    = $params['id'] ?? null;
             $perfil = $_SESSION['usuario']['perfil'] ?? 'OPERADOR';
+            $empresaId = $_SESSION['usuario']['empresaId'] ?? null;
 
             // Apenas admin pode cadastrar/editar produtos
-            if ($perfil !== 'ADM') {
+            if (!in_array($perfil, ['ADM', 'DONO'], true)) {
                 throw new Exception('Acesso negado. Apenas administradores podem gerenciar produtos.');
             }
 
@@ -98,7 +127,9 @@ class ProdutoController
                 throw new Exception('Preencha todos os campos obrigatórios corretamente.');
             }
 
-            $produto = $id ? ProdutoDAO::buscarPorId($id) : new Produto();
+            $produto = $id && $empresaId
+                ? ProdutoDAO::buscarPorIdEEmpresa($id, $empresaId)
+                : new Produto();
             if (empty($produto)) throw new Exception('Produto não encontrado.');
 
             $produto->setSku($sku);
@@ -111,16 +142,28 @@ class ProdutoController
 
             // Categoria
             if ($categoriaId) {
-                $categoria = CategoriaDAO::buscarPorId($categoriaId);
+                $categoria = $empresaId
+                    ? CategoriaDAO::buscarPorIdEEmpresa($categoriaId, $empresaId)
+                    : null;
+                if (!$categoria) throw new Exception('Categoria inválida.');
                 $produto->setCategoria($categoria);
             }
 
             // Fornecedor (opcional)
             if ($fornecedorId) {
-                $fornecedor = FornecedorDAO::buscarPorId($fornecedorId);
+                $fornecedor = $empresaId
+                    ? FornecedorDAO::buscarPorIdEEmpresa($fornecedorId, $empresaId)
+                    : null;
+                if (!$fornecedor) throw new Exception('Fornecedor inválido.');
                 $produto->setFornecedor($fornecedor);
             } else {
                 $produto->setFornecedor(null);
+            }
+
+            if ($empresaId && !$produto->getEmpresa()) {
+                $empresa = EmpresaDAO::buscarPorId($empresaId);
+                if (!$empresa) throw new Exception('Empresa inválida.');
+                $produto->setEmpresa($empresa);
             }
 
             if (!$id) {
@@ -144,6 +187,10 @@ class ProdutoController
                         $usuario = \dao\UsuarioDAO::buscarPorId($usuarioId);
                         $movimentacao->setUsuario($usuario);
                     }
+                    if ($empresaId) {
+                        $empresa = EmpresaDAO::buscarPorId($empresaId);
+                        $movimentacao->setEmpresa($empresa);
+                    }
                     MovimentacaoEstoqueDAO::salvar($movimentacao);
                 }
             } else {
@@ -162,7 +209,7 @@ class ProdutoController
     public function deletar(array $params)
     {
         try {
-            if (($_SESSION['usuario']['perfil'] ?? '') !== 'ADM') {
+            if (!in_array(($_SESSION['usuario']['perfil'] ?? ''), ['ADM', 'DONO'], true)) {
                 throw new Exception('Acesso negado.');
             }
             $resultado = ProdutoDAO::deletar($params['id']);

@@ -50,13 +50,32 @@ class LoginController
                 throw new Exception('Usuário inativo. Contate o administrador.');
             }
 
+            $empresa = $usuario->getEmpresa();
+
             // Grava sessão
             $_SESSION['usuario'] = [
-                'id'     => $usuario->getId(),
-                'nome'   => $usuario->getNome(),
-                'email'  => $usuario->getEmail(),
-                'perfil' => $usuario->getPerfil(),
+                'id'               => $usuario->getId(),
+                'nome'             => $usuario->getNome(),
+                'email'            => $usuario->getEmail(),
+                'perfil'           => $usuario->getPerfil(),
+                'empresaId'        => $empresa?->getId(),
+                'empresaNome'      => $empresa?->getNome(),
+                'empresaLogo'      => $empresa?->getLogo(),
+                'empresaCnpj'      => $empresa?->getCnpj(),
+                'empresaEmail'     => $empresa?->getEmail(),
+                'empresaTelefone'  => $empresa?->getTelefone(),
+                'empresaEndereco'  => $empresa?->getEndereco(),
+                'senhaTemporaria'  => (bool)$usuario->getSenhaTemporaria(),
             ];
+
+            if ($usuario->getSenhaTemporaria()) {
+                $_SESSION['flash'] = [
+                    'tipo' => 'warning',
+                    'mensagem' => 'Sua senha e temporaria. Defina uma nova senha para continuar.'
+                ];
+                header('Location: ' . BASE_URL . '/alterar-senha');
+                exit;
+            }
 
             $_SESSION['flash'] = ['tipo' => 'success', 'mensagem' => 'Bem-vindo, ' . $usuario->getNome() . '!'];
             header('Location: ' . BASE_URL . '/dashboard');

@@ -7,15 +7,22 @@ use Exception;
 use dao\MovimentacaoEstoqueDAO;
 use dao\ProdutoDAO;
 use dao\UsuarioDAO;
+use dao\EmpresaDAO;
 use model\MovimentacoesEstoque;
 
 class MovimentacaoController
 {
+    public function nova()
+    {
+        return $this->cadastrar();
+    }
+
     public function listar()
     {
         try {
-            $movimentacoes = MovimentacaoEstoqueDAO::listar();
-            $totalAlertas  = count(ProdutoDAO::listarEstoqueBaixo());
+            $empresaId     = $_SESSION['usuario']['empresaId'] ?? null;
+            $movimentacoes = $empresaId ? MovimentacaoEstoqueDAO::listarPorEmpresa($empresaId) : [];
+            $totalAlertas  = $empresaId ? count(ProdutoDAO::listarEstoqueBaixoPorEmpresa($empresaId)) : 0;
         } catch (Exception $ex) {
             $movimentacoes = [];
             $totalAlertas  = 0;
@@ -30,8 +37,9 @@ class MovimentacaoController
     public function cadastrar()
     {
         try {
-            $produtos     = ProdutoDAO::listar();
-            $totalAlertas = count(ProdutoDAO::listarEstoqueBaixo());
+            $empresaId    = $_SESSION['usuario']['empresaId'] ?? null;
+            $produtos     = $empresaId ? ProdutoDAO::listarPorEmpresa($empresaId) : [];
+            $totalAlertas = $empresaId ? count(ProdutoDAO::listarEstoqueBaixoPorEmpresa($empresaId)) : 0;
         } catch (Exception $ex) {
             $produtos = [];
             $totalAlertas = 0;
@@ -50,6 +58,7 @@ class MovimentacaoController
             $quantidade = filter_input(INPUT_POST, 'quantidade', FILTER_VALIDATE_INT);
             $produtoId  = filter_input(INPUT_POST, 'produto_id', FILTER_VALIDATE_INT);
             $observacao = filter_input(INPUT_POST, 'observacao', FILTER_SANITIZE_SPECIAL_CHARS);
+            $empresaId  = $_SESSION['usuario']['empresaId'] ?? null;
 
             if (!in_array($tipo, ['ENTRADA', 'SAIDA'], true)) {
                 throw new Exception('Tipo de movimentacao invalido.');
@@ -61,7 +70,7 @@ class MovimentacaoController
                 throw new Exception('Selecione um produto.');
             }
 
-            $produto = ProdutoDAO::buscarPorId($produtoId);
+            $produto = $empresaId ? ProdutoDAO::buscarPorIdEEmpresa($produtoId, $empresaId) : null;
             if (empty($produto)) throw new Exception('Produto nao encontrado.');
 
             $saldoAnterior = $produto->getQuantidadeEstoque();
@@ -94,6 +103,11 @@ class MovimentacaoController
             if ($usuarioId) {
                 $usuario = UsuarioDAO::buscarPorId($usuarioId);
                 $mov->setUsuario($usuario);
+            }
+
+            if ($empresaId) {
+                $empresa = EmpresaDAO::buscarPorId($empresaId);
+                $mov->setEmpresa($empresa);
             }
 
             MovimentacaoEstoqueDAO::salvar($mov);
