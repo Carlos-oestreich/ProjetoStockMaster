@@ -8,7 +8,12 @@
 // ================================================================
 const TEMA_KEY = 'stockmaster_tema';
 
-function aplicarTema(tema) {
+
+function aplicarTema(tema=null) {
+    if(tema == null){
+        tema = document.documentElement.getAttribute("data-bs-theme")
+        tema = tema === "dark" ? "light" : "dark"
+    }
     document.documentElement.setAttribute('data-bs-theme', tema);
     const icon = document.getElementById('icon-tema');
     if (icon) {
@@ -21,12 +26,8 @@ function aplicarTema(tema) {
     });
 }
 
-function toggleTema() {
-    const atual = localStorage.getItem(TEMA_KEY) || 'dark';
-    const novo  = atual === 'dark' ? 'light' : 'dark';
-    localStorage.setItem(TEMA_KEY, novo);
-    aplicarTema(novo);
-}
+
+
 
 // Aplica tema salvo ao carregar
 document.addEventListener('DOMContentLoaded', function () {

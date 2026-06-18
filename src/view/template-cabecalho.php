@@ -119,7 +119,7 @@ $navItems = [
         <h1 class="fs-5 fw-semibold text-white mb-0"><?= $tituloPagina ?></h1>
 
         <div class="d-flex align-items-center gap-2">
-            <button class="btn btn-link text-secondary p-2" id="btn-tema" type="button" onclick="toggleTema()">
+            <button class="btn btn-link text-secondary p-2" id="btn-tema" type="button" onclick="aplicarTema(null)">
                 <i class="bi bi-sun-fill" id="icon-tema"></i>
             </button>
 
