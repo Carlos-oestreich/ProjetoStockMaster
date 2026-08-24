@@ -33,7 +33,7 @@ O **StockMaster** é um sistema completo de gestão de estoque desenvolvido em *
 Também desenvolvemos este mesmo sistema em outras linguagens:
 
 **Versão em Java:**  
-[StockMaster Backend (Java + Spring Boot)](https://github.com/Carlos-oestreich/Projeto_StockMaster)
+[StockMaster Backend (Java + Spring Boot)](https://github.com/Carlos-oestreich/StockMaster-Java)
 
 ---
 
